@@ -1,0 +1,51 @@
+# C-Bigram-Analysis-Optimizer
+
+This repository documents the step-by-step optimization of a C-based bigram analyzer. The project explores how different algorithms, data structures, and code-level optimizations affect performance when processing large-scale text data (e.g., *War and Peace*).
+
+## Project Overview
+The program extracts pairs of consecutive words (bigrams) from a text file, calculates their frequency using a hash table, and identifies the top 20 most frequent bigrams. The goal was to transform a slow baseline into a high-performance analyzer through incremental improvements.
+
+## Optimization Roadmap
+
+### 1. Baseline Implementation (`Bigram_1_slow.c`)
+* **Features**: Basic hash table and **Insertion Sort**.
+* **Bottlenecks**: 
+    * Small hash table size ($HSIZE = 1021$) led to frequent collisions.
+    * $O(N^2)$ complexity of Insertion Sort caused significant delays during the ranking phase.
+    * Redundant `strlen()` calls inside loop conditions created $O(N)$ overhead per iteration.
+
+### 2. Code Motion (`Bigram_1_slow_code_motion.c`)
+* **Optimization**: Moved `strlen()` calls outside of `for` loops.
+* **Impact**: Prevented unnecessary string length recalculations, improving text processing speed.
+
+### 3. Algorithmic Improvement (`Bigram_2_qsort.c`)
+* **Optimization**: Replaced Insertion Sort with the standard library's **Quick Sort (`qsort`)**.
+* **Impact**: Drastically reduced sorting time complexity from $O(N^2)$ to $O(N \log N)$, making it viable for datasets with hundreds of thousands of unique bigrams.
+
+### 4. Insertion Logic & Memory (`Bigram_3_list_insert_head.c`)
+* **Optimization**: Implemented **Insert at Head** for the linked list buckets.
+* **Impact**: Simplified the logic for adding new nodes and slightly improved the overhead during the table-building phase.
+
+### 5. Hash Table Scaling (`Bigram_4_list_increased_bucket.c`)
+* **Optimization**: Increased the number of hash buckets to **99,991**.
+* **Impact**: Significantly reduced hash collisions. By thinning out the linked lists in each bucket, search and insertion times approached $O(1)$ efficiency.
+
+### 6. Advanced Hashing Algorithm (`Bigram_5_better_hash.c`)
+* **Optimization**: Replaced the simple additive hash with the **djb2** algorithm (`hval = ((hval << 5) + hval) + char`).
+* **Impact**: Achieved a more uniform distribution of data across buckets, further minimizing "clustering" and improving overall lookup performance.
+
+### 7. Modern Refactoring (`Bigram_6_functional_style.c`)
+* **Optimization**: Refactored the text-cleaning logic using pointer arithmetic and ternary operators.
+* **Impact**: Produced cleaner, more idiomatic C code while maintaining high execution efficiency.
+
+
+## 🛠 Usage
+
+### Prerequisites
+* A C compiler (e.g., GCC or Clang)
+* A source text file (default: `war_and_peace.txt`)
+
+### Compilation
+To compile the most optimized version:
+```bash
+gcc -O3 Bigram_6_functional_style.c -o bigram_analyzer
