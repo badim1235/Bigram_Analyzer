@@ -39,7 +39,7 @@ The program extracts pairs of consecutive words (bigrams) from a text file, calc
 * **Impact**: Produced cleaner, more idiomatic C code while maintaining high execution efficiency.
 
 
-## 🛠 Usage
+## Usage
 
 ### Prerequisites
 * A C compiler (e.g., GCC or Clang)
